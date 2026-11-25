@@ -263,7 +263,7 @@ const VIBE = 'https://github.com/Abdalruhman7/vibe-games/releases/download/games
 const SOCIAL = [
   { name: 'تيك توك', icon: 'tiktok', url: '' },
   { name: 'ديسكورد', icon: 'discord', url: '' },
-  { name: 'تويتش', icon: 'twitch', url: 'https://www.twitch.tv/sazoro' },
+  { name: 'تويتش', icon: 'twitch', url: '' },
 ];
 document.getElementById('social').innerHTML = SOCIAL.filter(a => a.url).map(a =>
   `<a href="${a.url}" target="_blank" rel="noopener" aria-label="${a.name}" title="${a.name}"><img src="https://cdn.simpleicons.org/${a.icon}/f3f1ec" alt="" width="18" height="18"></a>`).join('');
