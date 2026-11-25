@@ -36,7 +36,6 @@ button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
 .stage{position:fixed;inset:0;z-index:0;background:#000}
 .stage img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:0;transition:opacity .5s ease}
 .stage img.on{opacity:1}
-.stage img.px{image-rendering:pixelated}
 .shots{display:flex;gap:8px;margin-top:16px}
 .shots button{flex:0 1 92px;aspect-ratio:16/9;padding:0;border-radius:3px;overflow:hidden;border:2px solid transparent;opacity:.6;transition:opacity .2s,border-color .2s}
 .shots button:hover{opacity:1}
@@ -193,7 +192,7 @@ const GAMES = [
     tags: ['أونلاين', 'روغلايك', 'لين 4 لاعبين'],
     tagline: 'امزج العناصر مع ربعك',
     about: 'خمس شخصيات وستة عناصر، وكل عنصرين يصنعون تفاعل مثل العاصفة الثلجية والحمم. موجات وحوش بساحة فوق النجوم.' },
-  { id: 'rank-s', shots: 4, how: ["سوّ حسابك وشخصيتك: اختار شكلك وعرقك وكلاسك، مثل محارب، ساحر، رامي، أو معالج.", "خذ المهام من لوحة النقابة: صيد وحوش، جمع موارد، ودنجنات.", "كل مهمة تعطيك نقاط رتبة. عشان ترتقي من F لين S، تهزم زعيم الدنجن بروحك في امتحان الرتبة.", "انزل الدنجن الكبير، 100 طابق، مع فريق لين 4 لاعبين.", "اصنع أسلحة وبيعها بالسوق، وسوّ قبيلة مع ربعك. اللعبة أونلاين على سيرفر واحد للكل."],
+  { id: 'rank-s', shots: 1, how: ["سوّ حسابك وشخصيتك: اختار شكلك وعرقك وكلاسك، مثل محارب، ساحر، رامي، أو معالج.", "خذ المهام من لوحة النقابة: صيد وحوش، جمع موارد، ودنجنات.", "كل مهمة تعطيك نقاط رتبة. عشان ترتقي من F لين S، تهزم زعيم الدنجن بروحك في امتحان الرتبة.", "انزل الدنجن الكبير، 100 طابق، مع فريق لين 4 لاعبين.", "اصنع أسلحة وبيعها بالسوق، وسوّ قبيلة مع ربعك. اللعبة أونلاين على سيرفر واحد للكل."],
     name: 'RANK S', accent: '#f5c542',
     tags: ['أونلاين', 'RPG', 'بكسل'],
     tagline: 'ارفع رتبتك من F إلى S',
@@ -226,7 +225,6 @@ const shot = (g, k, thumb) => `assets/shots/${g.id}-${k}${thumb ? '-t' : ''}.web
 function backdrop(g, k) {
   const back = layers[1 - front], src = shot(g, k);
   if (layers[front].getAttribute('src') === src) return;
-  back.classList.toggle('px', g.id === 'rank-s');
   back.onload = () => { back.classList.add('on'); layers[front].classList.remove('on'); front = 1 - front; };
   back.src = src;
 }
