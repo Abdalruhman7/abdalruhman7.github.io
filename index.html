@@ -3,9 +3,9 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>أبو داحم | ألعاب</title>
-<meta name="description" content="ألعاب أبو داحم: الخيميائي، RANK S، تحدي الديوانية، درب الحروف ومسدس الروليت. كلها مجانية وتنزل من لانشر VIBE.">
-<meta property="og:title" content="أبو داحم | ألعاب">
+<title>Red Lens | ألعاب أبو داحم</title>
+<meta name="description" content="ألعاب أبو داحم: الخيميائي، RANK S، تحدي الديوانية، درب الحروف ومسدس الروليت. كلها مجانية وتنزل من لانشر Red Lens.">
+<meta property="og:title" content="Red Lens | ألعاب أبو داحم">
 <meta property="og:description" content="كل لعبة بدأت بفكرة. خمس ألعاب مجانية للكمبيوتر في لانشر واحد.">
 <meta property="og:image" content="assets/shots/alchemist.webp">
 <meta name="theme-color" content="#08080c">
@@ -41,6 +41,8 @@ button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
 .head{grid-column:1;grid-row:1}
 .games{grid-column:1;grid-row:2;align-self:center}
 .who{font-weight:700;font-size:1.15rem;line-height:1;display:flex;align-items:center;gap:12px}
+.who span{direction:ltr;letter-spacing:.14em;font-size:1.05rem}
+.who b{color:#ff2a35;font-weight:700}
 .who img{width:52px;height:52px;border-radius:50%;border:2px solid color-mix(in srgb,var(--accent) 55%,transparent);box-shadow:0 0 18px color-mix(in srgb,var(--accent) 30%,transparent)}
 .line{color:var(--muted);margin-top:10px;font-size:.98rem}
 
@@ -139,8 +141,8 @@ output.bad{color:#ff8a7a}
 
 <main class="ui">
   <header class="head">
-    <p class="who"><img src="assets/me.gif" width="52" height="52" alt="">أبو داحم</p>
-    <p class="line">كل لعبة بدأت بفكرة.</p>
+    <p class="who"><img src="assets/me.gif" width="52" height="52" alt=""><span><b>RED</b> LENS</span></p>
+    <p class="line">ألعاب أبو داحم. كل لعبة بدأت بفكرة.</p>
   </header>
 
   <nav class="games" aria-label="الألعاب">
@@ -154,7 +156,7 @@ output.bad{color:#ff8a7a}
 
   <footer class="foot">
     <button type="button" id="idea-open">اقترح لعبتك</button>
-    <a href="https://github.com/Abdalruhman7/vibe-games/releases/download/games/VIBE.exe" download>حمّل لانشر VIBE</a>
+    <a href="https://github.com/Abdalruhman7/vibe-games/releases/download/games/RedLens.exe" download>حمّل لانشر Red Lens</a>
     <button type="button" id="sound" aria-pressed="true">الصوت</button>
     <nav class="social" id="social" aria-label="حساباتي"></nav>
   </footer>
@@ -258,7 +260,7 @@ output.bad{color:#ff8a7a}
   requestAnimationFrame(draw);
 })();
 
-const VIBE = 'https://github.com/Abdalruhman7/vibe-games/releases/download/games/VIBE.exe';
+const LAUNCHER = 'https://github.com/Abdalruhman7/vibe-games/releases/download/games/RedLens.exe';
 // his accounts: a button shows only when its link is filled in
 const SOCIAL = [
   { name: 'تيك توك', icon: 'tiktok', c: '5fc9c6', url: 'https://www.tiktok.com/@abuda4em' },
@@ -355,7 +357,7 @@ function show(i) {
     </div>
     <div>
       <div class="act">
-        <a class="btn go" href="${VIBE}" download>حمّل اللانشر <kbd>Enter</kbd></a>
+        <a class="btn go" href="${LAUNCHER}" download>حمّل اللانشر <kbd>Enter</kbd></a>
         ${g.play ? `<a class="btn" href="${g.play}">العبها الحين</a>` : ''}
         <button class="btn" type="button" id="how-open">شرح اللعبة</button>
       </div>
