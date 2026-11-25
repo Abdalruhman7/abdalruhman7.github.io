@@ -36,7 +36,7 @@ button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
 .stage{position:fixed;inset:0;z-index:0;background:radial-gradient(ellipse 70% 60% at 38% 42%,color-mix(in srgb,var(--accent) 15%,transparent),transparent 70%),var(--bg)}
 
 /* menu layout */
-.ui{position:relative;z-index:1;height:100dvh;display:grid;grid-template-columns:minmax(320px,30%) 1fr;column-gap:clamp(24px,4vw,64px);grid-template-rows:auto 1fr auto;padding:clamp(24px,4vw,56px)}
+.ui{position:relative;z-index:1;height:100dvh;display:grid;grid-template-columns:minmax(270px,23%) 1fr;column-gap:clamp(24px,3vw,48px);grid-template-rows:auto 1fr auto;padding:clamp(24px,4vw,56px)}
 .head{grid-column:1;grid-row:1}
 .games{grid-column:1;grid-row:2;align-self:center}
 .who{font-weight:700;font-size:1.1rem;line-height:1}
@@ -56,10 +56,13 @@ button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
 .foot a:hover,.foot button:hover{color:var(--text);border-color:var(--accent)}
 
 /* info about the selected game */
-.show{grid-column:2;grid-row:1/4;align-self:center;width:100%;max-width:min(980px,calc((100dvh - 330px) * 16 / 9));justify-self:center}
+.show{grid-column:2;grid-row:1/4;align-self:center;width:100%;max-width:min(1600px,calc((100dvh - 250px) * 16 / 9));justify-self:center}
 .pic{aspect-ratio:16/9;border-radius:6px;overflow:hidden;border:1px solid var(--line);background:#000;box-shadow:0 30px 80px -30px #000,0 0 0 1px color-mix(in srgb,var(--accent) 25%,transparent)}
 .pic img{width:100%;height:100%;object-fit:contain;display:block;transition:opacity .35s ease}
-.info{margin-top:22px}
+/* text on one side, buttons on the other, so the picture keeps most of the height */
+.info{margin-top:18px;display:grid;grid-template-columns:minmax(0,1fr) auto;gap:10px 40px;align-items:start}
+.info .act{margin-top:0}
+.info .note{max-width:44ch}
 .info > *{animation:in .55s var(--ease) both}
 .info > :nth-child(2){animation-delay:.05s}.info > :nth-child(3){animation-delay:.1s}.info > :nth-child(4){animation-delay:.15s}
 @keyframes in{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:none}}
@@ -108,6 +111,8 @@ output.bad{color:#ff8a7a}
   .ui{height:auto;min-height:100dvh;grid-template-columns:1fr;grid-template-rows:auto;padding:20px 16px 32px;gap:22px}
   .head,.games,.foot,.show{grid-column:1;grid-row:auto}
   .show{order:2;max-width:none}
+  .info{grid-template-columns:1fr}
+  .info .act{margin-top:6px}
   .games{order:3}
   .foot{order:4;flex-wrap:wrap}
   .menu button[aria-current="true"]{transform:none}
@@ -225,9 +230,11 @@ function show(i) {
   pic.src = `assets/shots/${g.id}.webp`;
   pic.alt = `الشاشة الرئيسية للعبة ${g.name}`;
   info.innerHTML = `
-    <div class="tags">${g.tags.map(t => `<span>${t}</span>`).join('')}</div>
-    <p class="tagline">${g.tagline}</p>
-    <p class="about">${g.about}</p>
+    <div>
+      <div class="tags">${g.tags.map(t => `<span>${t}</span>`).join('')}</div>
+      <p class="tagline">${g.tagline}</p>
+      <p class="about">${g.about}</p>
+    </div>
     <div>
       <div class="act">
         <a class="btn go" href="${VIBE}" download>حمّل اللانشر <kbd>Enter</kbd></a>
