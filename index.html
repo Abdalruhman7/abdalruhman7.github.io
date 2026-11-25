@@ -40,7 +40,8 @@ button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
 .ui{position:relative;z-index:1;height:100dvh;display:grid;grid-template-columns:minmax(270px,23%) 1fr;column-gap:clamp(24px,3vw,48px);grid-template-rows:auto 1fr auto;padding:clamp(24px,4vw,56px)}
 .head{grid-column:1;grid-row:1}
 .games{grid-column:1;grid-row:2;align-self:center}
-.who{font-weight:700;font-size:1.1rem;line-height:1}
+.who{font-weight:700;font-size:1.15rem;line-height:1;display:flex;align-items:center;gap:12px}
+.who img{width:52px;height:52px;border-radius:50%;border:2px solid color-mix(in srgb,var(--accent) 55%,transparent);box-shadow:0 0 18px color-mix(in srgb,var(--accent) 30%,transparent)}
 .line{color:var(--muted);margin-top:10px;font-size:.98rem}
 
 .menu{list-style:none;padding:0;display:grid;gap:4px}
@@ -138,7 +139,7 @@ output.bad{color:#ff8a7a}
 
 <main class="ui">
   <header class="head">
-    <p class="who">أبو داحم</p>
+    <p class="who"><img src="assets/me.gif" width="52" height="52" alt="">أبو داحم</p>
     <p class="line">كل لعبة بدأت بفكرة.</p>
   </header>
 
