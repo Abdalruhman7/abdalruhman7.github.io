@@ -7,7 +7,7 @@
 <meta name="description" content="ألعاب أبو داحم: الخيميائي، RANK S، تحدي الديوانية، درب الحروف ومسدس الروليت. كلها مجانية وتنزل من لانشر VIBE.">
 <meta property="og:title" content="أبو داحم | ألعاب">
 <meta property="og:description" content="كل لعبة بدأت بفكرة. خمس ألعاب مجانية للكمبيوتر في لانشر واحد.">
-<meta property="og:image" content="assets/shots/alchemist-1.webp">
+<meta property="og:image" content="assets/shots/alchemist.webp">
 <meta name="theme-color" content="#08080c">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -32,21 +32,11 @@ a{color:inherit;text-decoration:none}
 button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
 :focus-visible{outline:2px solid var(--accent);outline-offset:3px}
 
-/* background clips, one per game, cross-faded */
-.stage{position:fixed;inset:0;z-index:0;background:#000}
-.stage img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:0;transition:opacity .5s ease}
-.stage img.on{opacity:1}
-.shots{display:flex;gap:8px;margin-top:16px}
-.shots button{flex:0 1 92px;aspect-ratio:16/9;padding:0;border-radius:3px;overflow:hidden;border:2px solid transparent;opacity:.6;transition:opacity .2s,border-color .2s}
-.shots button:hover{opacity:1}
-.shots button[aria-pressed="true"]{border-color:var(--accent);opacity:1}
-.shots img{width:100%;height:100%;object-fit:cover;display:block}
-.stage::after{content:"";position:absolute;inset:0;pointer-events:none;
-  background:linear-gradient(270deg,rgba(8,8,12,.94) 0%,rgba(8,8,12,.78) 30%,rgba(8,8,12,.18) 62%,rgba(8,8,12,.35) 100%),
-             linear-gradient(0deg,rgba(8,8,12,.9),transparent 38%)}
+/* plain dark backdrop tinted with the selected game's colour; nothing moves */
+.stage{position:fixed;inset:0;z-index:0;background:radial-gradient(ellipse 70% 60% at 38% 42%,color-mix(in srgb,var(--accent) 15%,transparent),transparent 70%),var(--bg)}
 
 /* menu layout */
-.ui{position:relative;z-index:1;height:100dvh;display:grid;grid-template-columns:minmax(360px,36%) 1fr;grid-template-rows:auto 1fr auto;padding:clamp(24px,4vw,56px)}
+.ui{position:relative;z-index:1;height:100dvh;display:grid;grid-template-columns:minmax(320px,30%) 1fr;column-gap:clamp(24px,4vw,64px);grid-template-rows:auto 1fr auto;padding:clamp(24px,4vw,56px)}
 .head{grid-column:1;grid-row:1}
 .games{grid-column:1;grid-row:2;align-self:center}
 .who{font-weight:700;font-size:1.1rem;line-height:1}
@@ -66,13 +56,16 @@ button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
 .foot a:hover,.foot button:hover{color:var(--text);border-color:var(--accent)}
 
 /* info about the selected game */
-.info{grid-column:2;grid-row:1/4;align-self:end;justify-self:end;width:min(480px,100%);margin-inline-start:40px;padding:22px 24px;border-radius:6px;border:1px solid var(--line);background:rgba(8,8,12,.62);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px)}
+.show{grid-column:2;grid-row:1/4;align-self:center;width:100%;max-width:min(980px,calc((100dvh - 330px) * 16 / 9));justify-self:center}
+.pic{aspect-ratio:16/9;border-radius:6px;overflow:hidden;border:1px solid var(--line);background:#000;box-shadow:0 30px 80px -30px #000,0 0 0 1px color-mix(in srgb,var(--accent) 25%,transparent)}
+.pic img{width:100%;height:100%;object-fit:contain;display:block;transition:opacity .35s ease}
+.info{margin-top:22px}
 .info > *{animation:in .55s var(--ease) both}
 .info > :nth-child(2){animation-delay:.05s}.info > :nth-child(3){animation-delay:.1s}.info > :nth-child(4){animation-delay:.15s}
 @keyframes in{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:none}}
 .tags{display:flex;flex-wrap:wrap;gap:8px}
 .tags span{font-size:.8rem;border:1px solid var(--line);padding:2px 10px;border-radius:3px;background:rgba(8,8,12,.45)}
-.tagline{font:700 1.45rem/1.45 var(--kufi);margin-top:16px;color:var(--accent);text-wrap:balance}
+.tagline{font:700 1.45rem/1.45 var(--kufi);margin-top:8px;color:var(--accent);text-wrap:balance}
 .about{color:#cfcdd6;margin-top:8px;text-wrap:pretty}
 .act{display:flex;flex-wrap:wrap;gap:12px;margin-top:22px}
 .btn{display:inline-flex;align-items:center;gap:10px;white-space:nowrap;padding:12px 20px;border-radius:4px;font-weight:700;border:1px solid var(--line);background:rgba(8,8,12,.5);transition:transform .2s,background .3s,border-color .3s}
@@ -112,12 +105,9 @@ output.bad{color:#ff8a7a}
 
 @media (max-width:860px){
   body{overflow:auto}
-  .stage{position:absolute;height:58vh}
-  .stage::after{background:linear-gradient(0deg,var(--bg) 0%,rgba(8,8,12,.2) 55%,rgba(8,8,12,.5) 100%)}
   .ui{height:auto;min-height:100dvh;grid-template-columns:1fr;grid-template-rows:auto;padding:20px 16px 32px;gap:22px}
-  .head,.games,.foot,.info{grid-column:1;grid-row:auto}
-  .head{margin-bottom:calc(58vh - 190px)}
-  .info{order:2;justify-self:stretch;width:100%;margin:0;padding:0;border:0;background:none;backdrop-filter:none}
+  .head,.games,.foot,.show{grid-column:1;grid-row:auto}
+  .show{order:2;max-width:none}
   .games{order:3}
   .foot{order:4;flex-wrap:wrap}
   .menu button[aria-current="true"]{transform:none}
@@ -131,10 +121,7 @@ output.bad{color:#ff8a7a}
 </head>
 <body>
 
-<div class="stage" aria-hidden="true">
-  <img alt="" class="on" src="assets/shots/alchemist-1.webp">
-  <img alt="">
-</div>
+<div class="stage" aria-hidden="true"></div>
 
 <main class="ui">
   <header class="head">
@@ -146,7 +133,10 @@ output.bad{color:#ff8a7a}
     <ul class="menu" id="menu"></ul>
   </nav>
 
-  <section class="info" id="info" aria-live="polite"></section>
+  <section class="show">
+    <figure class="pic"><img id="pic" src="assets/shots/alchemist.webp" width="1600" height="900" alt=""></figure>
+    <div class="info" id="info" aria-live="polite"></div>
+  </section>
 
   <footer class="foot">
     <button type="button" id="idea-open">اقترح لعبتك</button>
@@ -187,47 +177,38 @@ output.bad{color:#ff8a7a}
 const VIBE = 'https://github.com/Abdalruhman7/vibe-games/releases/download/games/VIBE.exe';
 // Text follows the launcher catalog (D:\GameLauncher\dist\catalog.json); edit both together.
 const GAMES = [
-  { id: 'alchemist', shots: 4, how: ["اختار شخصيتك من خمس: الحارس، الرامي، المداوي، الشبح، أو العاصف. واختار عنصرك: نار، ثلج، برق، سم، رياح، أو أرض.", "تنزل ساحة فوق النجوم وتجيك موجات وحوش. اضرب الوحش بعنصر وبعده بعنصر ثاني ويصير تفاعل، مثل العاصفة الثلجية والحمم.", "بعد كل جولة اختار غرض من ثلاثة. الأغراض تتراكم وتقويك أكثر وأكثر.", "إذا طحت ربعك يقومونك، وإذا طحتوا كلكم تنتهي الجولة.", "تلعبها بروحك أو مع ربعك لين 4 لاعبين: واحد يستضيف والباقين يدخلون عنده. المستضيف يفتح المنفذ 7777 UDP بالراوتر."],
+  { id: 'alchemist', how: ["اختار شخصيتك من خمس: الحارس، الرامي، المداوي، الشبح، أو العاصف. واختار عنصرك: نار، ثلج، برق، سم، رياح، أو أرض.", "تنزل ساحة فوق النجوم وتجيك موجات وحوش. اضرب الوحش بعنصر وبعده بعنصر ثاني ويصير تفاعل، مثل العاصفة الثلجية والحمم.", "بعد كل جولة اختار غرض من ثلاثة. الأغراض تتراكم وتقويك أكثر وأكثر.", "إذا طحت ربعك يقومونك، وإذا طحتوا كلكم تنتهي الجولة.", "تلعبها بروحك أو مع ربعك لين 4 لاعبين: واحد يستضيف والباقين يدخلون عنده. المستضيف يفتح المنفذ 7777 UDP بالراوتر."],
     name: 'الخيميائي', accent: '#3fd6c6', badge: 'تجريبية',
     tags: ['أونلاين', 'روغلايك', 'لين 4 لاعبين'],
     tagline: 'امزج العناصر مع ربعك',
     about: 'خمس شخصيات وستة عناصر، وكل عنصرين يصنعون تفاعل مثل العاصفة الثلجية والحمم. موجات وحوش بساحة فوق النجوم.' },
-  { id: 'rank-s', shots: 1, how: ["سوّ حسابك وشخصيتك: اختار شكلك وعرقك وكلاسك، مثل محارب، ساحر، رامي، أو معالج.", "خذ المهام من لوحة النقابة: صيد وحوش، جمع موارد، ودنجنات.", "كل مهمة تعطيك نقاط رتبة. عشان ترتقي من F لين S، تهزم زعيم الدنجن بروحك في امتحان الرتبة.", "انزل الدنجن الكبير، 100 طابق، مع فريق لين 4 لاعبين.", "اصنع أسلحة وبيعها بالسوق، وسوّ قبيلة مع ربعك. اللعبة أونلاين على سيرفر واحد للكل."],
+  { id: 'rank-s', how: ["سوّ حسابك وشخصيتك: اختار شكلك وعرقك وكلاسك، مثل محارب، ساحر، رامي، أو معالج.", "خذ المهام من لوحة النقابة: صيد وحوش، جمع موارد، ودنجنات.", "كل مهمة تعطيك نقاط رتبة. عشان ترتقي من F لين S، تهزم زعيم الدنجن بروحك في امتحان الرتبة.", "انزل الدنجن الكبير، 100 طابق، مع فريق لين 4 لاعبين.", "اصنع أسلحة وبيعها بالسوق، وسوّ قبيلة مع ربعك. اللعبة أونلاين على سيرفر واحد للكل."],
     name: 'RANK S', accent: '#f5c542',
     tags: ['أونلاين', 'RPG', 'بكسل'],
     tagline: 'ارفع رتبتك من F إلى S',
     about: 'عالم بكسل حي: مدينة فيها نقابة وسوق وميناء، غابات وثلج وصحراء، ودنجن من 100 طابق. العب بروحك أو مع ربعك.' },
-  { id: 'diwaniya', shots: 3, how: ["تنلعب على شاشة وحدة، والأحلى على التلفزيون. قسّموا نفسكم فريقين.", "اختاروا 6 فئات من أفلام ومسلسلات وألعاب وكورة وغيرها.", "كل فريق بدوره يختار سؤال: 200 أو 400 أو 600 نقطة، وكل ما زادت النقاط صعب السؤال.", "لكل فريق 3 مساعدات: مضاعفة النقاط، اتصل بصديق، وتغيير السؤال.", "بعد 36 سؤال، الفريق اللي جمع نقاط أكثر يفوز. وتقدرون تلعبون مباراة وحدة أو أفضل من 3 أو 5."],
+  { id: 'diwaniya', how: ["تنلعب على شاشة وحدة، والأحلى على التلفزيون. قسّموا نفسكم فريقين.", "اختاروا 6 فئات من أفلام ومسلسلات وألعاب وكورة وغيرها.", "كل فريق بدوره يختار سؤال: 200 أو 400 أو 600 نقطة، وكل ما زادت النقاط صعب السؤال.", "لكل فريق 3 مساعدات: مضاعفة النقاط، اتصل بصديق، وتغيير السؤال.", "بعد 36 سؤال، الفريق اللي جمع نقاط أكثر يفوز. وتقدرون تلعبون مباراة وحدة أو أفضل من 3 أو 5."],
     name: 'تحدي الديوانية', accent: '#ff7a59',
     tags: ['مسابقات', 'فريقين', 'جمعات'],
     tagline: 'صبّوا القهوة وقسّموا الربع',
     about: 'مسابقة أسئلة بين فريقين: 6 فئات تختارونها، 36 سؤال، و3 مساعدات لكل فريق.',
     play: 'diwaniya/' },
-  { id: 'darb', shots: 3, how: ["افتح اللعبة على الشاشة أو التلفزيون.", "الحكم يصوّر الكود اللي يطلع بجواله، ومن جواله يكتب أسماء الفريقين ويبدأ اللعبة. الجواب يطلع عنده بس.", "اللاعبين يصورون الكود الثاني على الشاشة، كل واحد يكتب اسمه ويختار فريقه، وجواله يصير جرس.", "الحكم يختار حرف، والسؤال يطلع على الشاشة. أسرع واحد يضغط الجرس يجاوب، والحكم يقول صح أو غلط.", "الفريق الأحمر يبني دربه من اليمين لليسار، والأخضر من فوق لتحت. أول فريق يكمّل دربه يفوز."],
+  { id: 'darb', how: ["افتح اللعبة على الشاشة أو التلفزيون.", "الحكم يصوّر الكود اللي يطلع بجواله، ومن جواله يكتب أسماء الفريقين ويبدأ اللعبة. الجواب يطلع عنده بس.", "اللاعبين يصورون الكود الثاني على الشاشة، كل واحد يكتب اسمه ويختار فريقه، وجواله يصير جرس.", "الحكم يختار حرف، والسؤال يطلع على الشاشة. أسرع واحد يضغط الجرس يجاوب، والحكم يقول صح أو غلط.", "الفريق الأحمر يبني دربه من اليمين لليسار، والأخضر من فوق لتحت. أول فريق يكمّل دربه يفوز."],
     name: 'درب الحروف', accent: '#22c7a9',
     tags: ['جمعات', 'فريقين', 'جوالات'],
     tagline: 'جوالك هو الجرس',
     about: 'افتحها على الشاشة، والحكم يصوّر الكود ويتحكم من جواله ويشوف الأجوبة. اللاعبين جوالاتهم جرس، والحروف والأسئلة على الشاشة.',
     play: 'darb/' },
-  { id: 'roulette', shots: 1, how: ["تنلعب على جهاز واحد: حددوا عدد اللاعبين.", "كل واحد بدوره يضغط الزناد، والشاشة تقول لك فرصة الرصاصة الجاية.", "اللي تطلع عليه الرصاصة يخسر، واتفقوا على العقاب قبل لا تبدون."],
+  { id: 'roulette', how: ["تنلعب على جهاز واحد: حددوا عدد اللاعبين.", "كل واحد بدوره يضغط الزناد، والشاشة تقول لك فرصة الرصاصة الجاية.", "اللي تطلع عليه الرصاصة يخسر، واتفقوا على العقاب قبل لا تبدون."],
     name: 'مسدس الروليت', accent: '#8fb8ff',
     tags: ['جمعات', 'حظ', 'جهاز واحد'],
     tagline: 'لفّوا المسدس وكل واحد ونصيبه',
     about: 'حددوا عدد اللاعبين، وكل واحد بدوره يضغط الزناد ويشوف نصيبه. جولة سريعة على جهاز واحد.' },
 ];
-console.assert(GAMES.every(g => g.shots >= 1), 'every game needs a picture');
 
 const fine = matchMedia('(hover: hover) and (pointer: fine)').matches;
 const menu = document.getElementById('menu'), info = document.getElementById('info');
-const layers = [...document.querySelectorAll('.stage img')];
-let front = 0;
-const shot = (g, k, thumb) => `assets/shots/${g.id}-${k}${thumb ? '-t' : ''}.webp`;
-function backdrop(g, k) {
-  const back = layers[1 - front], src = shot(g, k);
-  if (layers[front].getAttribute('src') === src) return;
-  back.onload = () => { back.classList.add('on'); layers[front].classList.remove('on'); front = 1 - front; };
-  back.src = src;
-}
+const pic = document.getElementById('pic');
 let cur = -1;
 
 menu.innerHTML = GAMES.map((g, i) =>
@@ -239,13 +220,14 @@ function show(i) {
   const g = GAMES[cur = i];
   document.documentElement.style.setProperty('--accent', g.accent);
   items.forEach((b, k) => b.setAttribute('aria-current', k === i));
-  backdrop(g, 1);
+  pic.style.opacity = 0;
+  pic.onload = () => { pic.style.opacity = 1; };
+  pic.src = `assets/shots/${g.id}.webp`;
+  pic.alt = `الشاشة الرئيسية للعبة ${g.name}`;
   info.innerHTML = `
     <div class="tags">${g.tags.map(t => `<span>${t}</span>`).join('')}</div>
     <p class="tagline">${g.tagline}</p>
     <p class="about">${g.about}</p>
-    ${g.shots > 1 ? `<div class="shots">${Array.from({ length: g.shots }, (_, k) =>
-      `<button type="button" data-k="${k + 1}" aria-pressed="${k === 0}" aria-label="صورة ${k + 1}"><img src="${shot(g, k + 1, true)}" alt=""></button>`).join('')}</div>` : ''}
     <div>
       <div class="act">
         <a class="btn go" href="${VIBE}" download>حمّل اللانشر <kbd>Enter</kbd></a>
@@ -255,10 +237,6 @@ function show(i) {
       <p class="note">ويندوز ممكن يطلّع تنبيه أول مرة: اضغط «مزيد من المعلومات» ثم «تشغيل على أي حال».</p>
       <p class="keys"><kbd>↑</kbd><kbd>↓</kbd>تنقّل بين الألعاب</p>
     </div>`;
-  info.querySelectorAll('.shots button').forEach(b => b.onclick = () => {
-    info.querySelectorAll('.shots button').forEach(x => x.setAttribute('aria-pressed', x === b));
-    backdrop(g, +b.dataset.k);
-  });
   document.getElementById('how-open').onclick = () => {
     how.querySelector('h2').textContent = g.name;
     how.querySelector('.what').textContent = g.about;
