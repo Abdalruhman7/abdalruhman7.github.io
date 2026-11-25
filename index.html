@@ -57,7 +57,7 @@ button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
 .foot a:hover,.foot button:hover{color:var(--text);border-color:var(--accent)}
 .social{display:flex;gap:10px;margin-inline-start:auto}
 .social a{display:grid;place-items:center;width:38px;height:38px;border:1px solid var(--line);border-radius:4px;background:rgba(8,8,12,.5);transition:border-color .2s,transform .2s}
-.social a:hover{transform:translateY(-2px);filter:brightness(1.12)}
+.social a:hover{transform:translateY(-2px);filter:brightness(1.2)}
 .social img{width:18px;height:18px}
 #sound[aria-pressed="false"]{color:var(--dim);text-decoration:line-through}
 .count{color:var(--muted);font-size:.88rem;margin-top:8px}
@@ -260,12 +260,12 @@ output.bad{color:#ff8a7a}
 const VIBE = 'https://github.com/Abdalruhman7/vibe-games/releases/download/games/VIBE.exe';
 // his accounts: a button shows only when its link is filled in
 const SOCIAL = [
-  { name: 'تيك توك', icon: 'tiktok', bg: '#25f4ee', fg: '0b0b0f', url: 'https://www.tiktok.com/@abuda4em' },
-  { name: 'ديسكورد', icon: 'discord', bg: '#5865f2', fg: 'ffffff', url: 'https://discord.gg/Mr9uTe2EcW' },
-  { name: 'تويتش', icon: 'twitch', bg: '#9146ff', fg: 'ffffff', url: 'https://www.twitch.tv/mattdock_' },
+  { name: 'تيك توك', icon: 'tiktok', c: '5fc9c6', url: 'https://www.tiktok.com/@abuda4em' },
+  { name: 'ديسكورد', icon: 'discord', c: '8a93f0', url: 'https://discord.gg/Mr9uTe2EcW' },
+  { name: 'تويتش', icon: 'twitch', c: 'a985f0', url: 'https://www.twitch.tv/mattdock_' },
 ];
 document.getElementById('social').innerHTML = SOCIAL.filter(a => a.url).map(a =>
-  `<a href="${a.url}" target="_blank" rel="noopener" aria-label="${a.name}" title="${a.name}" style="background:${a.bg};border-color:${a.bg}"><img src="https://cdn.simpleicons.org/${a.icon}/${a.fg}" alt="" width="18" height="18"></a>`).join('');
+  `<a href="${a.url}" target="_blank" rel="noopener" aria-label="${a.name}" title="${a.name}" style="border-color:#${a.c}55"><img src="https://cdn.simpleicons.org/${a.icon}/${a.c}" alt="" width="18" height="18"></a>`).join('');
 
 // soft menu sounds made in the browser (no files); the switch in the footer is remembered
 const mem = { get: k => { try { return localStorage.getItem(k); } catch { return null; } }, set: (k, v) => { try { localStorage.setItem(k, v); } catch {} } };
