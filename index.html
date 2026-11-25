@@ -52,16 +52,24 @@ button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
 .menu button:hover{color:var(--text)}
 .menu small{font:600 .72rem/1 Readex,sans-serif;color:var(--ink);background:var(--accent);padding:5px 8px 4px;border-radius:3px}
 
-.foot{grid-column:1;grid-row:3;display:flex;gap:26px;align-items:center;color:var(--muted);font-size:.95rem}
+.foot{grid-column:1/-1;grid-row:3;display:flex;gap:26px;white-space:nowrap;padding-top:16px;align-items:center;color:var(--muted);font-size:.95rem}
 .foot a,.foot button{border-bottom:1px solid transparent;transition:color .2s,border-color .2s}
 .foot a:hover,.foot button:hover{color:var(--text);border-color:var(--accent)}
+.social{display:flex;gap:10px;margin-inline-start:auto}
+.social a{display:grid;place-items:center;width:38px;height:38px;border:1px solid var(--line);border-radius:4px;background:rgba(8,8,12,.5);transition:border-color .2s,transform .2s}
+.social a:hover{border-color:var(--accent);transform:translateY(-2px)}
+.social img{width:18px;height:18px;opacity:.8}
+.social a:hover img{opacity:1}
+#sound[aria-pressed="false"]{color:var(--dim);text-decoration:line-through}
+.count{color:var(--muted);font-size:.88rem;margin-top:8px}
+.count b{color:var(--accent);font-size:1rem}
 
 /* info about the selected game */
-.show{grid-column:2;grid-row:1/4;align-self:center;width:100%;max-width:min(1600px,calc((100dvh - 250px) * 16 / 9));justify-self:center}
+.show{grid-column:2;grid-row:1/3;align-self:center;width:100%;max-width:min(1600px,calc((100dvh - 250px) * 16 / 9));justify-self:center}
 .pic{aspect-ratio:16/9;border-radius:6px;overflow:hidden;border:1px solid var(--line);background:#000;box-shadow:0 30px 80px -30px #000,0 0 0 1px color-mix(in srgb,var(--accent) 25%,transparent)}
 .pic img{width:100%;height:100%;object-fit:contain;display:block;transition:opacity .35s ease}
 /* text on one side, buttons on the other, so the picture keeps most of the height */
-.info{margin-top:18px;display:grid;grid-template-columns:minmax(0,1fr) auto;gap:10px 40px;align-items:start}
+.info{margin-top:18px;display:grid;grid-template-columns:minmax(0,1.3fr) minmax(0,1fr);gap:10px 40px;align-items:start}
 .info .act{margin-top:0}
 .info .note{max-width:44ch}
 .info > *{animation:in .55s var(--ease) both}
@@ -147,6 +155,8 @@ output.bad{color:#ff8a7a}
   <footer class="foot">
     <button type="button" id="idea-open">اقترح لعبتك</button>
     <a href="https://github.com/Abdalruhman7/vibe-games/releases/download/games/VIBE.exe" download>حمّل لانشر VIBE</a>
+    <button type="button" id="sound" aria-pressed="true">الصوت</button>
+    <nav class="social" id="social" aria-label="حساباتي"></nav>
   </footer>
 </main>
 
@@ -249,6 +259,43 @@ output.bad{color:#ff8a7a}
 })();
 
 const VIBE = 'https://github.com/Abdalruhman7/vibe-games/releases/download/games/VIBE.exe';
+// his accounts: a button shows only when its link is filled in
+const SOCIAL = [
+  { name: 'تيك توك', icon: 'tiktok', url: '' },
+  { name: 'ديسكورد', icon: 'discord', url: '' },
+  { name: 'تويتش', icon: 'twitch', url: 'https://www.twitch.tv/sazoro' },
+];
+document.getElementById('social').innerHTML = SOCIAL.filter(a => a.url).map(a =>
+  `<a href="${a.url}" target="_blank" rel="noopener" aria-label="${a.name}" title="${a.name}"><img src="https://cdn.simpleicons.org/${a.icon}/f3f1ec" alt="" width="18" height="18"></a>`).join('');
+
+// soft menu sounds made in the browser (no files); the switch in the footer is remembered
+const mem = { get: k => { try { return localStorage.getItem(k); } catch { return null; } }, set: (k, v) => { try { localStorage.setItem(k, v); } catch {} } };
+let soundOn = mem.get('sound') !== 'off', actx;
+const soundBtn = document.getElementById('sound');
+soundBtn.setAttribute('aria-pressed', soundOn);
+soundBtn.onclick = () => { soundOn = !soundOn; soundBtn.setAttribute('aria-pressed', soundOn); mem.set('sound', soundOn ? 'on' : 'off'); if (soundOn) blip(660, .07); };
+function blip(freq, len, type = 'sine', vol = .05) {
+  if (!soundOn) return;
+  actx ??= new (window.AudioContext || window.webkitAudioContext)();
+  const o = actx.createOscillator(), v = actx.createGain(), t0 = actx.currentTime;
+  o.type = type; o.frequency.setValueAtTime(freq, t0); o.frequency.exponentialRampToValueAtTime(freq * 1.5, t0 + len);
+  v.gain.setValueAtTime(vol, t0); v.gain.exponentialRampToValueAtTime(.0001, t0 + len);
+  o.connect(v); v.connect(actx.destination); o.start(t0); o.stop(t0 + len);
+}
+
+// counts: launcher installs come from GitHub's download numbers, browser plays from a small public counter
+// shortcut: abacus.jasoncameron.dev is a free counter with no uptime promise; move to his own backend if it ever fails
+const ABACUS = 'https://abacus.jasoncameron.dev', SHOW_FROM = 10; // tiny numbers are hidden until they grow
+const CATALOG_ID = { alchemist: 'alchemist', 'rank-s': 'rank-s', diwaniya: 'diwaniya-quiz', darb: 'darb-al-huruf', roulette: 'russian-roulette' };
+const COUNTS = {};
+const countHtml = g => {
+  const c = COUNTS[g.id] || {};
+  const bits = [];
+  if (c.plays >= SHOW_FROM) bits.push(`انلعبت <b>${c.plays.toLocaleString('ar')}</b> مرة`);
+  if (c.dl >= SHOW_FROM) bits.push(`نزّلوها <b>${c.dl.toLocaleString('ar')}</b> مرة`);
+  return bits.join(' · ');
+};
+const playHit = id => fetch(`${ABACUS}/hit/abudahem-games/play-${id}`, { keepalive: true }).catch(() => {});
 // Text follows the launcher catalog (D:\GameLauncher\dist\catalog.json); edit both together.
 const GAMES = [
   { id: 'alchemist', how: ["اختار شخصيتك من خمس: الحارس، الرامي، المداوي، الشبح، أو العاصف. واختار عنصرك: نار، ثلج، برق، سم، رياح، أو أرض.", "تنزل ساحة فوق النجوم وتجيك موجات وحوش. اضرب الوحش بعنصر وبعده بعنصر ثاني ويصير تفاعل، مثل العاصفة الثلجية والحمم.", "بعد كل جولة اختار غرض من ثلاثة. الأغراض تتراكم وتقويك أكثر وأكثر.", "إذا طحت ربعك يقومونك، وإذا طحتوا كلكم تنتهي الجولة.", "تلعبها بروحك أو مع ربعك لين 4 لاعبين: واحد يستضيف والباقين يدخلون عنده. المستضيف يفتح المنفذ 7777 UDP بالراوتر."],
@@ -304,6 +351,7 @@ function show(i) {
       <div class="tags">${g.tags.map(t => `<span>${t}</span>`).join('')}</div>
       <p class="tagline">${g.tagline}</p>
       <p class="about">${g.about}</p>
+      <p class="count" id="count">${countHtml(g)}</p>
     </div>
     <div>
       <div class="act">
@@ -314,6 +362,8 @@ function show(i) {
       <p class="note">ويندوز ممكن يطلّع تنبيه أول مرة: اضغط «مزيد من المعلومات» ثم «تشغيل على أي حال».</p>
       <p class="keys"><kbd>↑</kbd><kbd>↓</kbd>تنقّل بين الألعاب</p>
     </div>`;
+  info.querySelector('.act a:not(.go)')?.addEventListener('click', () => playHit(g.id));
+  info.querySelector('.go').addEventListener('click', () => blip(520, .25, 'triangle', .06));
   document.getElementById('how-open').onclick = () => {
     how.querySelector('h2').textContent = g.name;
     how.querySelector('.what').textContent = g.about;
@@ -325,7 +375,7 @@ function show(i) {
 // a game changes only when its name is clicked (or reached with the arrow keys), never on hover
 items.forEach((b, i) => {
   b.addEventListener('click', () => show(i));
-  b.addEventListener('focus', () => show(i));
+  b.addEventListener('focus', () => { if (cur !== i) blip(420 + i * 70, .09); show(i); });
 });
 
 const idea = document.getElementById('idea'), how = document.getElementById('how');
@@ -341,6 +391,25 @@ addEventListener('keydown', e => {
 });
 
 show(0);
+
+(async () => {
+  const put = () => { const el = document.getElementById('count'); if (el) el.innerHTML = countHtml(GAMES[cur]); };
+  try {
+    const r = await fetch('https://api.github.com/repos/Abdalruhman7/vibe-games/releases/tags/games');
+    const assets = (await r.json()).assets || [];
+    for (const g of GAMES) {
+      const id = CATALOG_ID[g.id];
+      // a game split into parts counts once: only its first part
+      const mine = assets.filter(a => new RegExp(`^${id}-[0-9.]+(-1)?\\.(zip|bin)$`).test(a.name));
+      (COUNTS[g.id] ??= {}).dl = mine.reduce((n, a) => n + a.download_count, 0);
+    }
+  } catch {}
+  put();
+  await Promise.all(GAMES.filter(g => g.play).map(async g => {
+    try { (COUNTS[g.id] ??= {}).plays = (await (await fetch(`${ABACUS}/get/abudahem-games/play-${g.id}`)).json()).value || 0; } catch {}
+  }));
+  put();
+})();
 
 // «اقترح لعبتك» goes straight into the owner's Google Form (answers land in his sheet).
 // Fill these from the form: its formResponse address and the entry.NNN id of each question.
