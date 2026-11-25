@@ -1,0 +1,305 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>أبو داحم | ألعاب</title>
+<meta name="description" content="ألعاب أبو داحم: الخيميائي، RANK S، تحدي الديوانية، درب الحروف ومسدس الروليت. كلها مجانية وتنزل من لانشر VIBE.">
+<meta property="og:title" content="أبو داحم | ألعاب">
+<meta property="og:description" content="كل لعبة بدأت بفكرة. خمس ألعاب مجانية للكمبيوتر في لانشر واحد.">
+<meta property="og:image" content="assets/bg/alchemist.jpg">
+<meta name="theme-color" content="#08080c">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Reem+Kufi:wght@600;700&display=swap">
+<style>
+@font-face{font-family:Readex;src:url(assets/fonts/readex-400.woff2) format("woff2");font-weight:400;font-display:swap}
+@font-face{font-family:Readex;src:url(assets/fonts/readex-600.woff2) format("woff2");font-weight:600;font-display:swap}
+@font-face{font-family:Readex;src:url(assets/fonts/readex-700.woff2) format("woff2");font-weight:700;font-display:swap}
+
+/* One dark theme: the page is a game's main menu. --accent follows the selected game. */
+:root{
+  --bg:#08080c; --text:#f3f1ec; --muted:#a3a1ad; --dim:#6d6b78; --line:rgba(255,255,255,.14);
+  --accent:#3fd6c6; --ink:#08080c;
+  --kufi:"Reem Kufi",Readex,"Segoe UI",Tahoma,sans-serif;
+  --ease:cubic-bezier(.16,1,.3,1);
+  color-scheme:dark;
+}
+*{box-sizing:border-box;margin:0}
+html,body{height:100%}
+body{background:var(--bg);color:var(--text);font:400 16px/1.75 Readex,"Segoe UI",Tahoma,sans-serif;overflow:hidden}
+a{color:inherit;text-decoration:none}
+button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
+:focus-visible{outline:2px solid var(--accent);outline-offset:3px}
+
+/* background clips, one per game, cross-faded */
+.stage{position:fixed;inset:0;z-index:0;background:#000}
+.stage video{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:0;transform:scale(1.04);transition:opacity .8s ease,transform 6s linear}
+.stage video.on{opacity:1;transform:scale(1)}
+.stage video.px{image-rendering:pixelated}
+.stage::after{content:"";position:absolute;inset:0;pointer-events:none;
+  background:linear-gradient(270deg,rgba(8,8,12,.94) 0%,rgba(8,8,12,.78) 30%,rgba(8,8,12,.18) 62%,rgba(8,8,12,.35) 100%),
+             linear-gradient(0deg,rgba(8,8,12,.9),transparent 38%)}
+
+/* menu layout */
+.ui{position:relative;z-index:1;height:100dvh;display:grid;grid-template-columns:minmax(360px,36%) 1fr;grid-template-rows:auto 1fr auto;padding:clamp(24px,4vw,56px)}
+.head{grid-column:1;grid-row:1}
+.games{grid-column:1;grid-row:2;align-self:center}
+.who{font-weight:700;font-size:1.1rem;line-height:1}
+.line{color:var(--muted);margin-top:10px;font-size:.98rem}
+
+.menu{list-style:none;padding:0;display:grid;gap:4px}
+.menu button{word-spacing:.3em;position:relative;display:flex;align-items:center;gap:14px;width:100%;text-align:start;padding:6px 0;
+  font:700 clamp(1.7rem,3vw,2.55rem)/1.25 var(--kufi);color:var(--dim);transition:color .25s,transform .45s var(--ease)}
+.menu button::before{content:"";flex:none;width:10px;height:10px;background:var(--accent);transform:rotate(45deg) scale(0);transition:transform .35s var(--ease)}
+.menu button[aria-current="true"]{color:var(--text);transform:translateX(-10px)}
+.menu button[aria-current="true"]::before{transform:rotate(45deg) scale(1)}
+.menu button:hover{color:var(--text)}
+.menu small{font:600 .72rem/1 Readex,sans-serif;color:var(--ink);background:var(--accent);padding:5px 8px 4px;border-radius:3px}
+
+.foot{grid-column:1;grid-row:3;display:flex;gap:26px;align-items:center;color:var(--muted);font-size:.95rem}
+.foot a,.foot button{border-bottom:1px solid transparent;transition:color .2s,border-color .2s}
+.foot a:hover,.foot button:hover{color:var(--text);border-color:var(--accent)}
+
+/* info about the selected game */
+.info{grid-column:2;grid-row:1/4;align-self:end;justify-self:end;width:min(480px,100%);margin-inline-start:40px;padding:22px 24px;border-radius:6px;border:1px solid var(--line);background:rgba(8,8,12,.62);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px)}
+.info > *{animation:in .55s var(--ease) both}
+.info > :nth-child(2){animation-delay:.05s}.info > :nth-child(3){animation-delay:.1s}.info > :nth-child(4){animation-delay:.15s}
+@keyframes in{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:none}}
+.tags{display:flex;flex-wrap:wrap;gap:8px}
+.tags span{font-size:.8rem;border:1px solid var(--line);padding:2px 10px;border-radius:3px;background:rgba(8,8,12,.45)}
+.tagline{font:700 1.45rem/1.45 var(--kufi);margin-top:16px;color:var(--accent);text-wrap:balance}
+.about{color:#cfcdd6;margin-top:8px;text-wrap:pretty}
+.act{display:flex;flex-wrap:wrap;gap:12px;margin-top:22px}
+.btn{display:inline-flex;align-items:center;gap:10px;white-space:nowrap;padding:12px 20px;border-radius:4px;font-weight:700;border:1px solid var(--line);background:rgba(8,8,12,.5);transition:transform .2s,background .3s,border-color .3s}
+.btn:hover{border-color:var(--accent);transform:translateY(-2px)}
+.btn:active{transform:scale(.97)}
+.btn.go{background:var(--accent);color:var(--ink);border-color:var(--accent)}
+.btn kbd{font:600 .7rem/1 Readex,sans-serif;border:1px solid currentColor;border-radius:3px;padding:3px 5px;opacity:.65}
+.note{color:var(--dim);font-size:.8rem;margin-top:12px}
+.keys{color:var(--dim);font-size:.82rem;margin-top:18px}
+.keys kbd{font:600 .72rem/1 Readex,sans-serif;border:1px solid var(--line);border-radius:3px;padding:3px 6px;margin-inline-end:4px;color:var(--muted)}
+
+/* «اقترح لعبتك» */
+dialog{margin:auto;width:min(560px,calc(100% - 32px));max-height:calc(100dvh - 32px);border:1px solid var(--line);border-radius:6px;padding:clamp(22px,4vw,34px);background:#101017;color:var(--text)}
+dialog::backdrop{background:rgba(4,4,8,.75);backdrop-filter:blur(6px)}
+dialog[open]{animation:in .4s var(--ease)}
+dialog h2{font:700 1.8rem/1.3 var(--kufi)}
+dialog > p{color:var(--muted);margin-top:6px}
+#how h3{font:700 1.1rem/1.4 var(--kufi);color:var(--accent);margin-top:22px}
+#how ol{list-style:none;padding:0;margin-top:12px;display:grid;gap:12px;counter-reset:step}
+#how li{counter-increment:step;display:grid;grid-template-columns:30px 1fr;gap:12px;align-items:start;line-height:1.7}
+#how li::before{content:counter(step);display:grid;place-items:center;width:30px;height:30px;border-radius:4px;background:var(--accent);color:var(--ink);font-weight:700;font-size:.9rem}
+.x{position:absolute;inset-inline-end:14px;top:12px;font-size:1.6rem;line-height:1;color:var(--muted);padding:6px}
+.x:hover{color:var(--text)}
+form{display:grid;gap:16px;margin-top:22px}
+label{display:grid;gap:6px;font-weight:600;font-size:.92rem}
+label small{font-weight:400;color:var(--dim)}
+input,textarea{font:inherit;font-weight:400;color:var(--text);background:var(--bg);border:1px solid var(--line);border-radius:4px;padding:11px 14px;width:100%}
+textarea{min-height:140px;resize:vertical}
+input:focus,textarea:focus{outline:none;border-color:var(--accent)}
+::placeholder{color:#75737f}
+.row{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+form .btn{justify-self:start}
+form .btn[disabled]{opacity:.6}
+output{font-weight:600;min-height:1.6em}
+output.ok{color:#5fbf6a}
+output.bad{color:#ff8a7a}
+
+@media (max-width:860px){
+  body{overflow:auto}
+  .stage{position:absolute;height:58vh}
+  .stage::after{background:linear-gradient(0deg,var(--bg) 0%,rgba(8,8,12,.2) 55%,rgba(8,8,12,.5) 100%)}
+  .ui{height:auto;min-height:100dvh;grid-template-columns:1fr;grid-template-rows:auto;padding:20px 16px 32px;gap:22px}
+  .head,.games,.foot,.info{grid-column:1;grid-row:auto}
+  .head{margin-bottom:calc(58vh - 190px)}
+  .info{order:2;justify-self:stretch;width:100%;margin:0;padding:0;border:0;background:none;backdrop-filter:none}
+  .games{order:3}
+  .foot{order:4;flex-wrap:wrap}
+  .menu button[aria-current="true"]{transform:none}
+  .keys,.btn kbd{display:none}
+  .row{grid-template-columns:1fr}
+}
+@media (prefers-reduced-motion:reduce){
+  *,*::before,*::after{animation:none!important;transition:none!important}
+}
+</style>
+</head>
+<body>
+
+<div class="stage" aria-hidden="true">
+  <video data-id="alchemist" muted loop playsinline preload="none" poster="assets/bg/alchemist.jpg" src="assets/bg/alchemist.mp4"></video>
+  <video data-id="rank-s" class="px" muted loop playsinline preload="none" poster="assets/bg/rank-s.jpg" src="assets/bg/rank-s.mp4"></video>
+  <video data-id="diwaniya" muted loop playsinline preload="none" poster="assets/bg/diwaniya.jpg" src="assets/bg/diwaniya.mp4"></video>
+  <video data-id="darb" muted loop playsinline preload="none" poster="assets/bg/darb.jpg" src="assets/bg/darb.mp4"></video>
+  <video data-id="roulette" muted loop playsinline preload="none" poster="assets/bg/roulette.jpg" src="assets/bg/roulette.mp4"></video>
+</div>
+
+<main class="ui">
+  <header class="head">
+    <p class="who">أبو داحم</p>
+    <p class="line">كل لعبة بدأت بفكرة.</p>
+  </header>
+
+  <nav class="games" aria-label="الألعاب">
+    <ul class="menu" id="menu"></ul>
+  </nav>
+
+  <section class="info" id="info" aria-live="polite"></section>
+
+  <footer class="foot">
+    <button type="button" id="idea-open">اقترح لعبتك</button>
+    <a href="https://github.com/Abdalruhman7/vibe-games/releases/download/games/VIBE.exe" download>حمّل لانشر VIBE</a>
+  </footer>
+</main>
+
+<dialog id="how" aria-labelledby="how-title">
+  <button class="x" type="button" aria-label="إغلاق" data-close>×</button>
+  <h2 id="how-title"></h2>
+  <p class="what"></p>
+  <h3>طريقة اللعب</h3>
+  <ol></ol>
+</dialog>
+
+<dialog id="idea" aria-labelledby="idea-title">
+  <button class="x" type="button" aria-label="إغلاق" data-close>×</button>
+  <h2 id="idea-title">اقترح لعبتك</h2>
+  <p>عندك فكرة لعبة وما تقدر تسويها؟ اكتبها وكل اللي في بالك، حتى لو سطرين، وحنا نسويها لك.</p>
+  <form id="idea-form" novalidate>
+    <label>فكرة اللعبة
+      <textarea name="idea" required maxlength="3000" placeholder="شنو اللعبة؟ كيف تنلعب؟ ومع منو؟"></textarea>
+    </label>
+    <div class="row">
+      <label>اسمك <small>اختياري</small>
+        <input name="name" maxlength="80" autocomplete="nickname">
+      </label>
+      <label>وين نرد عليك؟ <small>اختياري</small>
+        <input name="contact" maxlength="120" placeholder="حسابك بتيك توك أو إنستغرام">
+      </label>
+    </div>
+    <button class="btn go" type="submit">أرسل الفكرة</button>
+    <output role="status"></output>
+  </form>
+</dialog>
+
+<script>
+const VIBE = 'https://github.com/Abdalruhman7/vibe-games/releases/download/games/VIBE.exe';
+// Text follows the launcher catalog (D:\GameLauncher\dist\catalog.json); edit both together.
+const GAMES = [
+  { id: 'alchemist', how: ["اختار شخصيتك من خمس: الحارس، الرامي، المداوي، الشبح، أو العاصف. واختار عنصرك: نار، ثلج، برق، سم، رياح، أو أرض.", "تنزل ساحة فوق النجوم وتجيك موجات وحوش. اضرب الوحش بعنصر وبعده بعنصر ثاني ويصير تفاعل، مثل العاصفة الثلجية والحمم.", "بعد كل جولة اختار غرض من ثلاثة. الأغراض تتراكم وتقويك أكثر وأكثر.", "إذا طحت ربعك يقومونك، وإذا طحتوا كلكم تنتهي الجولة.", "تلعبها بروحك أو مع ربعك لين 4 لاعبين: واحد يستضيف والباقين يدخلون عنده. المستضيف يفتح المنفذ 7777 UDP بالراوتر."],
+    name: 'الخيميائي', accent: '#3fd6c6', badge: 'تجريبية',
+    tags: ['أونلاين', 'روغلايك', 'لين 4 لاعبين'],
+    tagline: 'امزج العناصر مع ربعك',
+    about: 'خمس شخصيات وستة عناصر، وكل عنصرين يصنعون تفاعل مثل العاصفة الثلجية والحمم. موجات وحوش بساحة فوق النجوم.' },
+  { id: 'rank-s', how: ["سوّ حسابك وشخصيتك: اختار شكلك وعرقك وكلاسك، مثل محارب، ساحر، رامي، أو معالج.", "خذ المهام من لوحة النقابة: صيد وحوش، جمع موارد، ودنجنات.", "كل مهمة تعطيك نقاط رتبة. عشان ترتقي من F لين S، تهزم زعيم الدنجن بروحك في امتحان الرتبة.", "انزل الدنجن الكبير، 100 طابق، مع فريق لين 4 لاعبين.", "اصنع أسلحة وبيعها بالسوق، وسوّ قبيلة مع ربعك. اللعبة أونلاين على سيرفر واحد للكل."],
+    name: 'RANK S', accent: '#f5c542',
+    tags: ['أونلاين', 'RPG', 'بكسل'],
+    tagline: 'ارفع رتبتك من F إلى S',
+    about: 'عالم بكسل حي: مدينة فيها نقابة وسوق وميناء، غابات وثلج وصحراء، ودنجن من 100 طابق. العب بروحك أو مع ربعك.' },
+  { id: 'diwaniya', how: ["تنلعب على شاشة وحدة، والأحلى على التلفزيون. قسّموا نفسكم فريقين.", "اختاروا 6 فئات من أفلام ومسلسلات وألعاب وكورة وغيرها.", "كل فريق بدوره يختار سؤال: 200 أو 400 أو 600 نقطة، وكل ما زادت النقاط صعب السؤال.", "لكل فريق 3 مساعدات: مضاعفة النقاط، اتصل بصديق، وتغيير السؤال.", "بعد 36 سؤال، الفريق اللي جمع نقاط أكثر يفوز. وتقدرون تلعبون مباراة وحدة أو أفضل من 3 أو 5."],
+    name: 'تحدي الديوانية', accent: '#ff7a59',
+    tags: ['مسابقات', 'فريقين', 'جمعات'],
+    tagline: 'صبّوا القهوة وقسّموا الربع',
+    about: 'مسابقة أسئلة بين فريقين: 6 فئات تختارونها، 36 سؤال، و3 مساعدات لكل فريق.',
+    play: 'diwaniya/' },
+  { id: 'darb', how: ["افتح اللعبة على الشاشة أو التلفزيون.", "الحكم يصوّر الكود اللي يطلع بجواله، ومن جواله يكتب أسماء الفريقين ويبدأ اللعبة. الجواب يطلع عنده بس.", "اللاعبين يصورون الكود الثاني على الشاشة، كل واحد يكتب اسمه ويختار فريقه، وجواله يصير جرس.", "الحكم يختار حرف، والسؤال يطلع على الشاشة. أسرع واحد يضغط الجرس يجاوب، والحكم يقول صح أو غلط.", "الفريق الأحمر يبني دربه من اليمين لليسار، والأخضر من فوق لتحت. أول فريق يكمّل دربه يفوز."],
+    name: 'درب الحروف', accent: '#22c7a9',
+    tags: ['جمعات', 'فريقين', 'جوالات'],
+    tagline: 'جوالك هو الجرس',
+    about: 'افتحها على الشاشة، والحكم يصوّر الكود ويتحكم من جواله ويشوف الأجوبة. اللاعبين جوالاتهم جرس، والحروف والأسئلة على الشاشة.',
+    play: 'darb/' },
+  { id: 'roulette', how: ["تنلعب على جهاز واحد: حددوا عدد اللاعبين.", "كل واحد بدوره يضغط الزناد، والشاشة تقول لك فرصة الرصاصة الجاية.", "اللي تطلع عليه الرصاصة يخسر، واتفقوا على العقاب قبل لا تبدون."],
+    name: 'مسدس الروليت', accent: '#8fb8ff',
+    tags: ['جمعات', 'حظ', 'جهاز واحد'],
+    tagline: 'لفّوا المسدس وكل واحد ونصيبه',
+    about: 'حددوا عدد اللاعبين، وكل واحد بدوره يضغط الزناد ويشوف نصيبه. جولة سريعة على جهاز واحد.' },
+];
+console.assert(GAMES.every(g => document.querySelector(`.stage video[data-id="${g.id}"]`)), 'every game needs a clip');
+
+const still = matchMedia('(prefers-reduced-motion: reduce)').matches;
+const fine = matchMedia('(hover: hover) and (pointer: fine)').matches;
+const menu = document.getElementById('menu'), info = document.getElementById('info');
+const clips = Object.fromEntries([...document.querySelectorAll('.stage video')].map(v => [v.dataset.id, v]));
+let cur = -1;
+
+menu.innerHTML = GAMES.map((g, i) =>
+  `<li><button type="button" data-i="${i}">${g.name}${g.badge ? ` <small>${g.badge}</small>` : ''}</button></li>`).join('');
+const items = [...menu.querySelectorAll('button')];
+
+function show(i) {
+  if (i === cur) return;
+  const prev = GAMES[cur], g = GAMES[cur = i];
+  document.documentElement.style.setProperty('--accent', g.accent);
+  items.forEach((b, k) => b.setAttribute('aria-current', k === i));
+  if (prev) { const v = clips[prev.id]; v.classList.remove('on'); setTimeout(() => v.pause(), 800); }
+  const v = clips[g.id];
+  v.classList.add('on');
+  if (!still) v.play().catch(() => {});
+  info.innerHTML = `
+    <div class="tags">${g.tags.map(t => `<span>${t}</span>`).join('')}</div>
+    <p class="tagline">${g.tagline}</p>
+    <p class="about">${g.about}</p>
+    <div>
+      <div class="act">
+        <a class="btn go" href="${VIBE}" download>حمّل اللانشر <kbd>Enter</kbd></a>
+        ${g.play ? `<a class="btn" href="${g.play}">العبها الحين</a>` : ''}
+        <button class="btn" type="button" id="how-open">شرح اللعبة</button>
+      </div>
+      <p class="note">ويندوز ممكن يطلّع تنبيه أول مرة: اضغط «مزيد من المعلومات» ثم «تشغيل على أي حال».</p>
+      <p class="keys"><kbd>↑</kbd><kbd>↓</kbd>تنقّل بين الألعاب</p>
+    </div>`;
+  document.getElementById('how-open').onclick = () => {
+    how.querySelector('h2').textContent = g.name;
+    how.querySelector('.what').textContent = g.about;
+    how.querySelector('ol').innerHTML = g.how.map(t => `<li>${t}</li>`).join('');
+    how.showModal();
+  };
+}
+
+let hoverT;
+items.forEach((b, i) => {
+  b.addEventListener('click', () => show(i));
+  b.addEventListener('focus', () => show(i));
+  // hovering a name previews it, like a game menu; a short wait stops flicker when the mouse sweeps across
+  if (fine) b.addEventListener('pointerenter', () => { clearTimeout(hoverT); hoverT = setTimeout(() => show(i), 90); });
+});
+
+const idea = document.getElementById('idea'), how = document.getElementById('how');
+how.addEventListener('click', e => { if (e.target === how || e.target.closest('[data-close]')) how.close(); });
+addEventListener('keydown', e => {
+  if (idea.open || how.open || e.target.closest('input,textarea')) return;
+  if (e.key === 'ArrowDown' || e.key === 'ArrowUp') {
+    e.preventDefault();
+    items[(cur + (e.key === 'ArrowDown' ? 1 : -1) + GAMES.length) % GAMES.length].focus();
+  } else if (e.key === 'Enter' && !e.target.closest('a,button')) {
+    info.querySelector('.go').click();
+  }
+});
+
+show(0);
+
+// «اقترح لعبتك» goes straight into the owner's Google Form (answers land in his sheet).
+// Fill these from the form: its formResponse address and the entry.NNN id of each question.
+const FORM = { url: '', idea: '', name: '', contact: '' };
+document.getElementById('idea-open').addEventListener('click', () => idea.showModal());
+idea.addEventListener('click', e => { if (e.target === idea || e.target.closest('[data-close]')) idea.close(); });
+const form = document.getElementById('idea-form');
+form.addEventListener('submit', async e => {
+  e.preventDefault();
+  const out = form.querySelector('output'), btn = form.querySelector('button[type=submit]');
+  const say = (text, cls) => { out.textContent = text; out.className = cls; };
+  const f = form.elements, text = f.idea.value.trim();
+  if (text.length < 10) { say('اكتب فكرتك أول، ولو بسطر.', 'bad'); f.idea.focus(); return; }
+  if (!FORM.url) { say('الإرسال لسا ما انربط. جرّب بعدين.', 'bad'); return; }
+  const data = new URLSearchParams({ [FORM.idea]: text, [FORM.name]: f.name.value.trim(), [FORM.contact]: f.contact.value.trim() });
+  btn.disabled = true; say('جاري الإرسال...', '');
+  try {
+    // no-cors: Google gives no readable reply, so only a network failure counts as an error
+    await fetch(FORM.url, { method: 'POST', mode: 'no-cors', body: data });
+    form.reset(); say('وصلت فكرتك. مشكور!', 'ok');
+  } catch { say('ما انرسلت. تأكد من النت وجرّب مرة ثانية.', 'bad'); }
+  btn.disabled = false;
+});
+</script>
+</body>
+</html>
