@@ -32,8 +32,9 @@ a{color:inherit;text-decoration:none}
 button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
 :focus-visible{outline:2px solid var(--accent);outline-offset:3px}
 
-/* plain dark backdrop tinted with the selected game's colour; nothing moves */
+/* dark backdrop tinted with the selected game's colour, with the interactive dot field on top */
 .stage{position:fixed;inset:0;z-index:0;background:radial-gradient(ellipse 70% 60% at 38% 42%,color-mix(in srgb,var(--accent) 15%,transparent),transparent 70%),var(--bg)}
+.stage canvas{position:absolute;inset:0;width:100%;height:100%;display:block}
 
 /* menu layout */
 .ui{position:relative;z-index:1;height:100dvh;display:grid;grid-template-columns:minmax(270px,23%) 1fr;column-gap:clamp(24px,3vw,48px);grid-template-rows:auto 1fr auto;padding:clamp(24px,4vw,56px)}
@@ -126,7 +127,7 @@ output.bad{color:#ff8a7a}
 </head>
 <body>
 
-<div class="stage" aria-hidden="true"></div>
+<div class="stage" aria-hidden="true"><canvas id="field"></canvas></div>
 
 <main class="ui">
   <header class="head">
@@ -179,6 +180,74 @@ output.bad{color:#ff8a7a}
 </dialog>
 
 <script>
+// Background: soft clouds of light in the selected game's colour under a field of dots. The clouds drift
+// slowly and lean away from the pointer, dots near it swell and light up, and a click sends a ring of light out.
+(() => {
+  const cv = document.getElementById('field'), g = cv.getContext('2d');
+  const calm = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const GAP = 24, REACH = 230;
+  const P = { x: -1e4, y: -1e4, sx: 0, sy: 0 };
+  let W = 0, H = 0, dots = [], rings = [], t = 0, col = [63, 214, 198], want = col;
+  const hex = h => [1, 3, 5].map(k => parseInt(h.slice(k, k + 2), 16));
+  const rgba = (c, a) => `rgba(${c.map(Math.round).join(',')},${a})`;
+  window.setFieldColour = h => { want = hex(h); if (calm) draw(); };
+
+  function size() {
+    const dpr = Math.min(devicePixelRatio || 1, 2);
+    W = innerWidth; H = innerHeight;
+    cv.width = W * dpr; cv.height = H * dpr;
+    g.setTransform(dpr, 0, 0, dpr, 0, 0);
+    dots = [];
+    for (let y = GAP / 2; y < H; y += GAP) for (let x = GAP / 2; x < W; x += GAP) dots.push({ x, y, l: 0 });
+    if (calm) draw();
+  }
+
+  function cloud(x, y, r, c, a) {
+    const gr = g.createRadialGradient(x, y, 0, x, y, r);
+    gr.addColorStop(0, rgba(c, a)); gr.addColorStop(1, rgba(c, 0));
+    g.fillStyle = gr; g.fillRect(0, 0, W, H);
+  }
+
+  function draw() {
+    t += 1 / 60;
+    col = col.map((c, k) => c + (want[k] - c) * .05);
+    const deep = col.map((c, k) => c * .45 + [70, 40, 140][k] * .55); // the accent pulled toward violet for depth
+    // the clouds lean a little away from the pointer, so the picture feels like it has depth
+    const tx = P.x > -1e3 ? (P.x / W - .5) : 0, ty = P.y > -1e3 ? (P.y / H - .5) : 0;
+    P.sx += (tx - P.sx) * .04; P.sy += (ty - P.sy) * .04;
+    g.clearRect(0, 0, W, H);
+    const m = Math.max(W, H);
+    cloud(W * (.22 + .06 * Math.sin(t * .13)) - P.sx * 60, H * (.3 + .05 * Math.cos(t * .11)) - P.sy * 40, m * .55, col, .22);
+    cloud(W * (.78 + .05 * Math.cos(t * .09)) - P.sx * 90, H * (.78 + .06 * Math.sin(t * .12)) - P.sy * 60, m * .5, deep, .3);
+    cloud(W * (.55 + .08 * Math.sin(t * .07 + 2)) - P.sx * 30, H * (.12 + .04 * Math.sin(t * .1)) - P.sy * 20, m * .35, col, .12);
+
+    rings = rings.filter(o => (o.r += 10) < 1000);
+    for (const d of dots) {
+      const dx = d.x - P.x, dy = d.y - P.y, dist = Math.hypot(dx, dy);
+      const near = dist < REACH ? 1 - dist / REACH : 0;
+      const wave = .5 + .5 * Math.sin(d.x * .006 + d.y * .004 - t * .9);
+      let ring = 0;
+      for (const o of rings) ring = Math.max(ring, Math.max(0, 1 - Math.abs(Math.hypot(d.x - o.x, d.y - o.y) - o.r) / 46) * (1 - o.r / 1000));
+      d.l += (Math.min(1, near * near * 1.3 + ring) - d.l) * .2;
+      const push = near * 12;
+      const x = d.x + (dist > .1 ? dx / dist * push : 0), y = d.y + (dist > .1 ? dy / dist * push : 0);
+      const s = 1.6 + d.l * 3.4;
+      g.fillStyle = rgba(d.l > .05 ? col.map(c => c + (255 - c) * d.l * .35) : col, .1 + wave * .14 + d.l * .85);
+      g.fillRect(x - s / 2, y - s / 2, s, s);
+    }
+    if (P.x > -1e3) cloud(P.x, P.y, 180, col, .1); // soft light under the pointer
+    if (!calm) requestAnimationFrame(draw);
+  }
+
+  size();
+  addEventListener('resize', size);
+  if (calm) return;
+  addEventListener('pointermove', e => { P.x = e.clientX; P.y = e.clientY; });
+  document.documentElement.addEventListener('pointerleave', () => { P.x = P.y = -1e4; });
+  addEventListener('pointerdown', e => { if (!e.target.closest('a,button,input,textarea,dialog')) rings.push({ x: e.clientX, y: e.clientY, r: 0 }); });
+  requestAnimationFrame(draw);
+})();
+
 const VIBE = 'https://github.com/Abdalruhman7/vibe-games/releases/download/games/VIBE.exe';
 // Text follows the launcher catalog (D:\GameLauncher\dist\catalog.json); edit both together.
 const GAMES = [
@@ -211,7 +280,6 @@ const GAMES = [
     about: 'حددوا عدد اللاعبين، وكل واحد بدوره يضغط الزناد ويشوف نصيبه. جولة سريعة على جهاز واحد.' },
 ];
 
-const fine = matchMedia('(hover: hover) and (pointer: fine)').matches;
 const menu = document.getElementById('menu'), info = document.getElementById('info');
 const pic = document.getElementById('pic');
 const PICS = 3; // bump when the pictures change, so browsers stop showing the old ones
@@ -225,6 +293,7 @@ function show(i) {
   if (i === cur) return;
   const g = GAMES[cur = i];
   document.documentElement.style.setProperty('--accent', g.accent);
+  window.setFieldColour?.(g.accent);
   items.forEach((b, k) => b.setAttribute('aria-current', k === i));
   pic.style.opacity = 0;
   pic.onload = () => { pic.style.opacity = 1; };
@@ -253,12 +322,10 @@ function show(i) {
   };
 }
 
-let hoverT;
+// a game changes only when its name is clicked (or reached with the arrow keys), never on hover
 items.forEach((b, i) => {
   b.addEventListener('click', () => show(i));
   b.addEventListener('focus', () => show(i));
-  // hovering a name previews it, like a game menu; a short wait stops flicker when the mouse sweeps across
-  if (fine) b.addEventListener('pointerenter', () => { clearTimeout(hoverT); hoverT = setTimeout(() => show(i), 90); });
 });
 
 const idea = document.getElementById('idea'), how = document.getElementById('how');
