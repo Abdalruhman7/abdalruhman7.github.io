@@ -139,7 +139,7 @@ output.bad{color:#ff8a7a}
   </nav>
 
   <section class="show">
-    <figure class="pic"><img id="pic" src="assets/shots/alchemist.webp" width="1600" height="900" alt=""></figure>
+    <figure class="pic"><img id="pic" src="assets/shots/alchemist.webp?v=3" width="1600" height="900" alt=""></figure>
     <div class="info" id="info" aria-live="polite"></div>
   </section>
 
@@ -214,6 +214,7 @@ const GAMES = [
 const fine = matchMedia('(hover: hover) and (pointer: fine)').matches;
 const menu = document.getElementById('menu'), info = document.getElementById('info');
 const pic = document.getElementById('pic');
+const PICS = 3; // bump when the pictures change, so browsers stop showing the old ones
 let cur = -1;
 
 menu.innerHTML = GAMES.map((g, i) =>
@@ -227,7 +228,7 @@ function show(i) {
   items.forEach((b, k) => b.setAttribute('aria-current', k === i));
   pic.style.opacity = 0;
   pic.onload = () => { pic.style.opacity = 1; };
-  pic.src = `assets/shots/${g.id}.webp`;
+  pic.src = `assets/shots/${g.id}.webp?v=${PICS}`;
   pic.alt = `الشاشة الرئيسية للعبة ${g.name}`;
   info.innerHTML = `
     <div>
