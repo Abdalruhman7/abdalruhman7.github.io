@@ -4,9 +4,9 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Red Lens | ألعاب أبو داحم</title>
-<meta name="description" content="ألعاب أبو داحم: الخيميائي، RANK S، تحدي الديوانية، درب الحروف ومسدس الروليت. كلها مجانية وتنزل من لانشر Red Lens.">
+<meta name="description" content="ألعاب أبو داحم: الخيميائي، توب 10، RANK S، تحدي الديوانية، درب الحروف ومسدس الروليت. كلها مجانية وتنزل من لانشر Red Lens.">
 <meta property="og:title" content="Red Lens | ألعاب أبو داحم">
-<meta property="og:description" content="كل لعبة بدأت بفكرة. خمس ألعاب مجانية للكمبيوتر في لانشر واحد.">
+<meta property="og:description" content="كل لعبة بدأت بفكرة. ست ألعاب مجانية للكمبيوتر في لانشر واحد.">
 <meta property="og:image" content="assets/shots/alchemist.webp">
 <meta name="theme-color" content="#08080c">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -288,7 +288,7 @@ function blip(freq, len, type = 'sine', vol = .05) {
 // counts: launcher installs come from GitHub's download numbers, browser plays from a small public counter
 // shortcut: abacus.jasoncameron.dev is a free counter with no uptime promise; move to his own backend if it ever fails
 const ABACUS = 'https://abacus.jasoncameron.dev', SHOW_FROM = 10; // tiny numbers are hidden until they grow
-const CATALOG_ID = { alchemist: 'alchemist', 'rank-s': 'rank-s', diwaniya: 'diwaniya-quiz', darb: 'darb-al-huruf', roulette: 'russian-roulette' };
+const CATALOG_ID = { alchemist: 'alchemist', 'rank-s': 'rank-s', diwaniya: 'diwaniya-quiz', top10: 'top10', darb: 'darb-al-huruf', roulette: 'russian-roulette' };
 const COUNTS = {};
 const countHtml = g => {
   const c = COUNTS[g.id] || {};
@@ -305,6 +305,12 @@ const GAMES = [
     tags: ['أونلاين', 'روغلايك', 'لين 4 لاعبين'],
     tagline: 'امزج العناصر مع ربعك',
     about: 'خمس شخصيات وستة عناصر، وكل عنصرين يصنعون تفاعل مثل العاصفة الثلجية والحمم. موجات وحوش بساحة فوق النجوم.' },
+  { id: 'top10', how: ["كل جولة يطلع لك سؤال توب 10 عشوائي، مثل «أكثر 10 ألعاب مبيعاً» أو «أكثر 10 أندية دخلاً».", "اكتب تخمينك بالعربي أو الإنجليزي، وكل إجابة صحيحة تنكشف بمكانها بالترتيب.", "عندك 6 محاولات. لو كتبت الاسم وفيه غلطة إملائية تطلع لك «قربت!» وما تخسر محاولة.", "اضغط العين جنب أي إجابة عشان تشوف معلومتها.", "خلصت الجولة؟ اضغط «إعادة اللعبة» ويجيك سؤال جديد ما طلع لك قبل."],
+    name: 'توب 10', accent: '#ff3b48',
+    tags: ['مسابقات', 'جهاز واحد', '96 سؤال'],
+    tagline: 'خمّن العشرة قبل ما تخلص محاولاتك',
+    about: 'سؤال توب 10 عشوائي كل جولة وما يتكرر: ألعاب، رياضة، أفلام، سيارات، أكل، تقنية، وجغرافيا. جاوب بالعربي أو الإنجليزي.',
+    play: 'top10/' },
   { id: 'rank-s', how: ["سوّ حسابك وشخصيتك: اختار شكلك وعرقك وكلاسك، مثل محارب، ساحر، رامي، أو معالج.", "خذ المهام من لوحة النقابة: صيد وحوش، جمع موارد، ودنجنات.", "كل مهمة تعطيك نقاط رتبة. عشان ترتقي من F لين S، تهزم زعيم الدنجن بروحك في امتحان الرتبة.", "انزل الدنجن الكبير، 100 طابق، مع فريق لين 4 لاعبين.", "اصنع أسلحة وبيعها بالسوق، وسوّ قبيلة مع ربعك. اللعبة أونلاين على سيرفر واحد للكل."],
     name: 'RANK S', accent: '#f5c542',
     tags: ['أونلاين', 'RPG', 'بكسل'],
@@ -331,7 +337,7 @@ const GAMES = [
 
 const menu = document.getElementById('menu'), info = document.getElementById('info');
 const pic = document.getElementById('pic');
-const PICS = 3; // bump when the pictures change, so browsers stop showing the old ones
+const PICS = 4; // bump when the pictures change, so browsers stop showing the old ones
 let cur = -1;
 
 menu.innerHTML = GAMES.map((g, i) =>
